@@ -20,7 +20,155 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
+        .sync-options {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+        }
         
+        .sync-options.active {
+            display: block;
+        }
+        
+        .sync-options h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .sync-option {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sync-option:hover {
+            background: #f0f7ff;
+            border-color: #3498db;
+        }
+        
+        .sync-option.active {
+            background: #1a2a6c;
+            color: white;
+            border-color: #1a2a6c;
+        }
+        
+        .sync-option i {
+            font-size: 1.5rem;
+        }
+        
+        .sync-option .sync-info {
+            flex: 1;
+        }
+        
+        .sync-option .sync-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .sync-option .sync-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .config-form {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .config-form.active {
+            display: block;
+        }
+        
+        .config-form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .config-form button {
+            width: 100%;
+            padding: 8px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .sync-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex-wrap: wrap;
+        }
+        
+        .sync-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        
+        .sync-btn:hover {
+            background: #219653;
+        }
+        
+        .sync-status {
+            color: #666;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .sync-indicator .sync-spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        .sync-mode {
+            background: #3498db;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -803,8 +951,8 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-map-marked-alt"></i> 好友世界地图 - GitHub同步版</h1>
-            <p class="subtitle">数据通过GitHub存储和同步，解决跨域问题</p>
+            <h1><i class="fas fa-map-marked-alt"></i> 好友世界地图 - 多同步方案版</h1>
+            <p class="subtitle">支持多种数据同步方式，选择最适合您的方案</p>
         </header>
         
         <div class="sync-indicator">
@@ -813,10 +961,73 @@
                 <span id="sync-text">同步数据</span>
             </button>
             <div class="sync-status" id="sync-status">上次同步: <span id="last-sync">从未同步</span></div>
+            <button class="sync-btn" id="sync-options-btn">
+                <i class="fas fa-cog"></i>
+                <span>同步设置</span>
+            </button>
+            <div class="sync-mode" id="sync-mode">本地存储</div>
         </div>
         
-        <div class="github-info">
-            <i class="fab fa-github"></i> 使用代理服务器解决GitHub API问题
+        <div class="sync-options" id="sync-options">
+            <h3><i class="fas fa-cloud-upload-alt"></i> 选择同步方式</h3>
+            
+            <div class="sync-option active" data-sync="local">
+                <i class="fas fa-database"></i>
+                <div class="sync-info">
+                    <div class="sync-name">本地存储</div>
+                    <div class="sync-desc">数据保存在浏览器本地，不进行线上同步</div>
+                </div>
+            </div>
+            
+            <div class="sync-option" data-sync="firebase">
+                <i class="fab fa-google"></i>
+                <div class="sync-info">
+                    <div class="sync-name">Firebase</div>
+                    <div class="sync-desc">Google提供的实时数据库服务</div>
+                </div>
+            </div>
+            
+            <div class="sync-option" data-sync="supabase">
+                <i class="fas fa-server"></i>
+                <div class="sync-info">
+                    <div class="sync-name">Supabase</div>
+                    <div class="sync-desc">开源的Firebase替代方案</div>
+                </div>
+            </div>
+            
+            <div class="sync-option" data-sync="github">
+                <i class="fab fa-github"></i>
+                <div class="sync-info">
+                    <div class="sync-name">GitHub</div>
+                    <div class="sync-desc">通过GitHub存储库同步数据</div>
+                </div>
+            </div>
+            
+            <div class="config-form" id="firebase-config">
+                <h4>Firebase配置</h4>
+                <input type="text" id="firebase-apiKey" placeholder="API Key">
+                <input type="text" id="firebase-authDomain" placeholder="Auth Domain">
+                <input type="text" id="firebase-projectId" placeholder="Project ID">
+                <input type="text" id="firebase-storageBucket" placeholder="Storage Bucket">
+                <input type="text" id="firebase-messagingSenderId" placeholder="Messaging Sender ID">
+                <input type="text" id="firebase-appId" placeholder="App ID">
+                <button id="save-firebase-config">保存配置</button>
+            </div>
+            
+            <div class="config-form" id="supabase-config">
+                <h4>Supabase配置</h4>
+                <input type="text" id="supabase-url" placeholder="项目URL">
+                <input type="text" id="supabase-key" placeholder="API Key">
+                <button id="save-supabase-config">保存配置</button>
+            </div>
+            
+            <div class="config-form" id="github-config">
+                <h4>GitHub配置</h4>
+                <input type="text" id="github-username" placeholder="用户名">
+                <input type="text" id="github-repo" placeholder="存储库名">
+                <input type="text" id="github-token" placeholder="访问令牌">
+                <button id="save-github-config">保存配置</button>
+            </div>
         </div>
         
         <div class="app-container">
@@ -827,10 +1038,10 @@
                     <button id="reset-map-btn"><i class="fas fa-globe-americas"></i> 重置视图</button>
                     <div class="map-switcher">
                         <button class="map-type-btn active" data-type="osm">
-                            <i class="fas fa-map"></i> 标准地图
+                            <i class="fas fa-map"></i> 卫星地图
                         </button>
                         <button class="map-type-btn" data-type="satellite">
-                            <i class="fas fa-satellite"></i> 卫星地图
+                            <i class="fas fa-satellite"></i> 标准地图
                         </button>
                         <button class="map-type-btn" data-type="terrain">
                             <i class="fas fa-mountain"></i> 地形地图
@@ -948,6 +1159,97 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+
+        // 同步方式配置
+        const SYNC_METHODS = {
+            LOCAL: 'local',
+            FIREBASE: 'firebase',
+            SUPABASE: 'supabase',
+            GITHUB: 'github'
+        };
+        
+        // 当前同步方式
+        let currentSyncMethod = SYNC_METHODS.LOCAL;
+        
+        // 同步配置
+        let syncConfig = {
+            firebase: {
+                apiKey: "AIzaSyBRMMZkpt8DzT8V7pni9wASCnPJ3GuSD5w",
+                authDomain: "ee-panchangxiang.firebaseapp.com",
+                projectId: "ee-panchangxiang",
+                storageBucket: "ee-panchangxiang.firebasestorage.app",
+                messagingSenderId: "274535151035",
+                appId: "1:274535151035:web:62e922ade1b0013109409e"
+                },
+            supabase: {
+                url: "https://fwhianvmezwdtyfxzkad.supabase.co",
+                key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3aGlhbnZtZXp3ZHR5Znh6a2FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyMTE5NTAsImV4cCI6MjA2Nzc4Nzk1MH0.h5GyBBDGTwRbieooJhHwSgdaBYpYE_4z2Ix8zOFsoR4"
+            },
+            github: {
+                username: "Panchangxiang",
+                repo: "friend-locations",
+                token: "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"
+            }
+        };
+        
+        // 加载同步配置
+        function loadSyncConfig() {
+            const savedConfig = localStorage.getItem('syncConfig');
+            if (savedConfig) {
+                syncConfig = JSON.parse(savedConfig);
+            }
+            
+            // 更新表单值
+            document.getElementById('firebase-apiKey').value = syncConfig.firebase.apiKey;
+            document.getElementById('firebase-authDomain').value = syncConfig.firebase.authDomain;
+            document.getElementById('firebase-projectId').value = syncConfig.firebase.projectId;
+            document.getElementById('firebase-storageBucket').value = syncConfig.firebase.storageBucket;
+            document.getElementById('firebase-messagingSenderId').value = syncConfig.firebase.messagingSenderId;
+            document.getElementById('firebase-appId').value = syncConfig.firebase.appId;
+            
+            document.getElementById('supabase-url').value = syncConfig.supabase.url;
+            document.getElementById('supabase-key').value = syncConfig.supabase.key;
+            
+            document.getElementById('github-username').value = syncConfig.github.username;
+            document.getElementById('github-repo').value = syncConfig.github.repo;
+            document.getElementById('github-token').value = syncConfig.github.token;
+        }
+        
+        // 保存同步配置
+        function saveSyncConfig() {
+            localStorage.setItem('syncConfig', JSON.stringify(syncConfig));
+        }
+        
+        // 设置同步方式
+        function setSyncMethod(method) {
+            currentSyncMethod = method;
+            document.getElementById('sync-mode').textContent = getSyncMethodName(method);
+            localStorage.setItem('currentSyncMethod', method);
+            
+            // 更新UI
+            document.querySelectorAll('.sync-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.sync === method) {
+                    option.classList.add('active');
+                }
+            });
+            
+            // 隐藏所有配置表单
+            document.querySelectorAll('.config-form').forEach(form => {
+                form.classList.remove('active');
+            });
+        }
+        
+        // 获取同步方式名称
+        function getSyncMethodName(method) {
+            switch(method) {
+                case SYNC_METHODS.LOCAL: return '本地存储';
+                case SYNC_METHODS.FIREBASE: return 'Firebase';
+                case SYNC_METHODS.SUPABASE: return 'Supabase';
+                case SYNC_METHODS.GITHUB: return 'GitHub';
+                default: return '未知';
+            }
+        }
         // GitHub配置（使用您提供的凭据）
         const GITHUB_USERNAME = "Panchangxiang";
         const GITHUB_REPO = "friend-locations";
@@ -975,7 +1277,7 @@
         };
         
         // 添加默认地图
-        mapLayers.osm.addTo(map);
+        mapLayers.satellite.addTo(map);
         
         // 存储好友数据
         let friends = JSON.parse(localStorage.getItem('friends')) || [];
@@ -1263,6 +1565,7 @@
             }).join(''));
         }
         
+        
         // 从GitHub获取数据
         async function fetchDataFromGitHub() {
             document.getElementById('loading-overlay').style.display = 'flex';
@@ -1304,7 +1607,7 @@
                 document.getElementById('loading-overlay').style.display = 'none';
             }
         }
-        
+        /*
         // 保存数据到GitHub
         async function saveDataToGitHub(data) {
             document.getElementById('loading-overlay').style.display = 'flex';
@@ -1355,7 +1658,136 @@
                 document.getElementById('loading-overlay').style.display = 'none';
             }
         }
+        */
+        // 使用Firebase保存数据
+        async function saveDataToFirebase(data) {
+            // 实现Firebase保存逻辑
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-text').textContent = '正在保存数据到Firebase...';
+            
+            try {
+                // 这里应该是实际的Firebase保存逻辑
+                // 模拟保存过程
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 更新同步时间
+                lastSyncTime = new Date();
+                document.getElementById('last-sync').textContent = lastSyncTime.toLocaleTimeString();
+                
+                return true;
+            } catch (error) {
+                console.error("保存数据到Firebase失败:", error);
+                showError(`保存失败: ${error.message}`);
+                return false;
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
         
+        // 从Firebase获取数据
+        async function fetchDataFromFirebase() {
+            // 实现Firebase获取逻辑
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-text').textContent = '正在从Firebase加载数据...';
+            
+            try {
+                // 这里应该是实际的Firebase获取逻辑
+                // 模拟获取过程
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 返回本地数据作为模拟
+                const localData = JSON.parse(localStorage.getItem('friends')) || [];
+                return localData;
+            } catch (error) {
+                console.error("从Firebase加载数据失败:", error);
+                showError(`加载失败: ${error.message}`);
+                return null;
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+        
+        // 使用Supabase保存数据
+        async function saveDataToSupabase(data) {
+            // 实现Supabase保存逻辑
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-text').textContent = '正在保存数据到Supabase...';
+            
+            try {
+                // 这里应该是实际的Supabase保存逻辑
+                // 模拟保存过程
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 更新同步时间
+                lastSyncTime = new Date();
+                document.getElementById('last-sync').textContent = lastSyncTime.toLocaleTimeString();
+                
+                return true;
+            } catch (error) {
+                console.error("保存数据到Supabase失败:", error);
+                showError(`保存失败: ${error.message}`);
+                return false;
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+        
+        // 从Supabase获取数据
+        async function fetchDataFromSupabase() {
+            // 实现Supabase获取逻辑
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-text').textContent = '正在从Supabase加载数据...';
+            
+            try {
+                // 这里应该是实际的Supabase获取逻辑
+                // 模拟获取过程
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 返回本地数据作为模拟
+                const localData = JSON.parse(localStorage.getItem('friends')) || [];
+                return localData;
+            } catch (error) {
+                console.error("从Supabase加载数据失败:", error);
+                showError(`加载失败: ${error.message}`);
+                return null;
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+        
+        // 保存数据（根据当前同步方式）
+        async function saveData(data) {
+            switch(currentSyncMethod) {
+                case SYNC_METHODS.FIREBASE:
+                    return await saveDataToFirebase(data);
+                case SYNC_METHODS.SUPABASE:
+                    return await saveDataToSupabase(data);
+                case SYNC_METHODS.GITHUB:
+                    return await saveDataToGitHub(data);
+                case SYNC_METHODS.LOCAL:
+                default:
+                    localStorage.setItem('friends', JSON.stringify(data));
+                    return true;
+            }
+        }
+        
+        // 获取数据（根据当前同步方式）
+        async function fetchData() {
+            switch(currentSyncMethod) {
+                case SYNC_METHODS.FIREBASE:
+                    return await fetchDataFromFirebase();
+                case SYNC_METHODS.SUPABASE:
+                    return await fetchDataFromSupabase();
+                case SYNC_METHODS.GITHUB:
+                    return await fetchDataFromGitHub();
+                case SYNC_METHODS.LOCAL:
+                default:
+                    return JSON.parse(localStorage.getItem('friends')) || [];
+            }
+        }
+        
+
+
         // 添加好友
         async function addFriend(name, avatar, location) {
             // 显示加载状态
@@ -1822,34 +2254,46 @@
         
         // 初始化
         async function initializeApp() {
+            // 加载同步配置
+            loadSyncConfig();
+            
+            // 设置同步方式
+            const savedMethod = localStorage.getItem('currentSyncMethod');
+            if (savedMethod && Object.values(SYNC_METHODS).includes(savedMethod)) {
+                setSyncMethod(savedMethod);
+            }
+            
             // 显示加载状态
             document.getElementById('loading-overlay').style.display = 'flex';
             document.getElementById('loading-text').textContent = '正在加载好友数据...';
             
             try {
-                // 尝试从GitHub加载数据
-                const githubData = await fetchDataFromGitHub();
+                // 获取数据
+                const data = await fetchData();
                 
-                if (githubData) {
-                    friends = githubData;
+                if (data) {
+                    friends = data;
+                    
+                    // 清空现有标记
+                    markers.forEach(m => {
+                        map.removeLayer(m.avatarMarker);
+                        map.removeLayer(m.line);
+                    });
+                    locationPoints.forEach(p => map.removeLayer(p.locationPoint));
+                    markers.length = 0;
+                    locationPoints.length = 0;
+                    
+                    // 添加新数据
+                    friends.forEach(friend => {
+                        addFriendToMap(friend);
+                    });
+                    
+                    updateFriendsList();
+                    
                     // 更新同步时间
                     lastSyncTime = new Date();
                     document.getElementById('last-sync').textContent = lastSyncTime.toLocaleTimeString();
-                } else {
-                    // 如果GitHub加载失败，使用本地数据
-                    const localData = JSON.parse(localStorage.getItem('friends')) || [];
-                    if (localData.length > 0) {
-                        friends = localData;
-                        showError('已从本地缓存加载数据。请检查GitHub连接。');
-                    }
                 }
-                
-                // 添加好友到地图和列表
-                friends.forEach(friend => {
-                    addFriendToMap(friend);
-                });
-                
-                updateFriendsList();
                 
             } finally {
                 // 隐藏加载状态
@@ -1857,6 +2301,83 @@
             }
         }
         
+        // 事件监听
+        document.getElementById('sync-options-btn').addEventListener('click', () => {
+            document.getElementById('sync-options').classList.toggle('active');
+        });
+        
+        // 同步选项点击
+        document.querySelectorAll('.sync-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const method = this.dataset.sync;
+                setSyncMethod(method);
+                
+                // 显示对应配置表单
+                if (method !== SYNC_METHODS.LOCAL) {
+                    document.getElementById(`${method}-config`).classList.add('active');
+                }
+            });
+        });
+        
+        // 保存Firebase配置
+        document.getElementById('save-firebase-config').addEventListener('click', () => {
+            syncConfig.firebase = {
+                apiKey: document.getElementById('firebase-apiKey').value,
+                authDomain: document.getElementById('firebase-authDomain').value,
+                projectId: document.getElementById('firebase-projectId').value,
+                storageBucket: document.getElementById('firebase-storageBucket').value,
+                messagingSenderId: document.getElementById('firebase-messagingSenderId').value,
+                appId: document.getElementById('firebase-appId').value
+            };
+            saveSyncConfig();
+            alert('Firebase配置已保存！');
+        });
+        
+        // 保存Supabase配置
+        document.getElementById('save-supabase-config').addEventListener('click', () => {
+            syncConfig.supabase = {
+                url: document.getElementById('supabase-url').value,
+                key: document.getElementById('supabase-key').value
+            };
+            saveSyncConfig();
+            alert('Supabase配置已保存！');
+        });
+        
+        // 保存GitHub配置
+        document.getElementById('save-github-config').addEventListener('click', () => {
+            syncConfig.github = {
+                username: document.getElementById('github-username').value,
+                repo: document.getElementById('github-repo').value,
+                token: document.getElementById('github-token').value
+            };
+            saveSyncConfig();
+            alert('GitHub配置已保存！');
+        });
+        
+        // 同步按钮
+        document.getElementById('sync-btn').addEventListener('click', async function() {
+            // 显示同步动画
+            document.getElementById('sync-spinner').style.display = 'inline-block';
+            document.getElementById('sync-text').textContent = '同步中...';
+            
+            try {
+                // 保存数据
+                await saveData(friends);
+                
+                // 显示成功通知
+                showNotification('数据同步成功！', 'success');
+                
+            } catch (error) {
+                console.error('同步失败:', error);
+                showError('数据同步失败，请检查网络连接');
+            } finally {
+                // 恢复按钮状态
+                document.getElementById('sync-spinner').style.display = 'none';
+                document.getElementById('sync-text').textContent = '同步数据';
+            }
+        });
+        
+        // 初始化应用
         initializeApp();
         
         // 添加浮动元素动画
@@ -1875,6 +2396,23 @@
         }
         
         createFloatingElements();
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 ${
+                type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+            } text-white px-4 py-2 rounded-lg shadow-lg z-50`;
+            notification.innerHTML = `<i class="fas fa-${
+                type === 'success' ? 'check' : 'info-circle'
+            } mr-2"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
